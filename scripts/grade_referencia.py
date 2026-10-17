@@ -21,14 +21,23 @@ from PIL import Image, ImageDraw, ImageFont
 
 COLUNAS = "ABCDEFGHIJ"
 LINHAS = 8
-FONTE = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+# Primeira fonte em negrito encontrada (Linux, macOS, Windows). Sem nenhuma,
+# o Pillow cai numa fonte bitmap minuscula e a legenda fica ilegivel.
+FONTES = [
+    "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+    "/System/Library/Fonts/Supplemental/Arial Bold.ttf",
+    "/Library/Fonts/Arial Bold.ttf",
+    "C:/Windows/Fonts/arialbd.ttf",
+]
 
 
 def _fonte(tamanho):
-    try:
-        return ImageFont.truetype(FONTE, tamanho)
-    except OSError:
-        return ImageFont.load_default()
+    for caminho in FONTES:
+        try:
+            return ImageFont.truetype(caminho, tamanho)
+        except OSError:
+            continue
+    return ImageFont.load_default(size=tamanho)
 
 
 def agradar(origem, saida):

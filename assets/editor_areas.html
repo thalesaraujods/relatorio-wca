@@ -1,0 +1,286 @@
+<title>__TITULO__</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: bancada — foto com os retangulos a esquerda, controles e exportacao a direita; empilha no celular */
+:root {
+  --bg: #f3f4f1;
+  --panel: #ffffff;
+  --fg: #1d2420;
+  --muted: #5d6862;
+  --line: #d6dbd6;
+  --accent: #2f6b4f;
+  --solving: #ffd000;
+  --scramble: #e41e26;
+  --waiting: #ff8500;
+  --font-ui: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #151a17; --panel: #1e2521; --fg: #e8ece9; --muted: #9aa69f; --line: #34403a; --accent: #7cc4a0;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #151a17; --panel: #1e2521; --fg: #e8ece9; --muted: #9aa69f; --line: #34403a; --accent: #7cc4a0;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg); font-family: var(--font-ui); font-size: 15px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 32px;
+}
+header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 16px; margin-bottom: 14px; }
+h1 { font-size: 1.35rem; margin: 0; text-wrap: balance; }
+header p { margin: 0; color: var(--muted); max-width: 70ch; }
+.thumbs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 14px; }
+.thumb {
+  flex: 0 0 auto; width: 112px; border: 2px solid var(--line); border-radius: 6px; background: var(--panel);
+  padding: 0; cursor: pointer; color: var(--fg); font: inherit;
+}
+.thumb img { display: block; width: 100%; aspect-ratio: 4/3; object-fit: cover; border-radius: 4px 4px 0 0; }
+.thumb span { display: flex; justify-content: space-between; gap: 4px; padding: 3px 6px; font-size: 12px; }
+.thumb.active { border-color: var(--accent); }
+.thumb.off img { opacity: .35; }
+.thumb:focus-visible, button:focus-visible, label:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+.work { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 18px; align-items: start; }
+@media (max-width: 860px) { .work { grid-template-columns: minmax(0, 1fr); } }
+.stage { position: relative; user-select: none; -webkit-user-select: none; touch-action: none; border-radius: 6px; overflow: hidden; background: #000; }
+.stage img { display: block; width: 100%; height: auto; pointer-events: none; }
+.box { position: absolute; border: 3px solid; cursor: move; touch-action: none; }
+.box .tag {
+  position: absolute; left: -3px; top: -3px; transform: translateY(-100%); font-size: 11px; font-weight: 700;
+  padding: 2px 6px; color: #111; white-space: nowrap; pointer-events: none;
+}
+.box.inside-top .tag { transform: none; }
+.h { position: absolute; width: 16px; height: 16px; background: #fff; border: 2px solid #111; border-radius: 3px; touch-action: none; }
+.h.nw { left: -9px; top: -9px; cursor: nwse-resize; }
+.h.ne { right: -9px; top: -9px; cursor: nesw-resize; }
+.h.sw { left: -9px; bottom: -9px; cursor: nesw-resize; }
+.h.se { right: -9px; bottom: -9px; cursor: nwse-resize; }
+.legend {
+  position: absolute; right: 2%; bottom: 3%; background: rgba(20,20,20,.82); color: #fff; padding: 8px 12px;
+  border-radius: 4px; font-size: clamp(9px, 1.5vw, 14px); font-weight: 700; display: grid; gap: 4px; pointer-events: none;
+}
+.legend i { display: inline-block; width: 1em; height: 1em; margin-right: 6px; vertical-align: -2px; }
+aside { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px; display: grid; gap: 16px; min-width: 0; }
+aside h2 { font-size: .78rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 0 0 8px; }
+.areas { display: grid; gap: 8px; }
+.area { display: grid; grid-template-columns: 18px 1fr auto; align-items: center; gap: 10px; }
+.chip { width: 18px; height: 18px; border-radius: 3px; }
+.area code { font-family: var(--font-mono); font-size: 11px; color: var(--muted); grid-column: 2 / 4; }
+button.btn {
+  font: inherit; font-size: 13px; padding: 6px 12px; border-radius: 5px; border: 1px solid var(--line);
+  background: var(--bg); color: var(--fg); cursor: pointer;
+}
+button.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--panel); font-weight: 600; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+label.inc { display: flex; gap: 8px; align-items: center; cursor: pointer; }
+textarea {
+  width: 100%; min-height: 150px; font-family: var(--font-mono); font-size: 11px; background: var(--bg); color: var(--fg);
+  border: 1px solid var(--line); border-radius: 5px; padding: 8px; resize: vertical;
+}
+.hint { color: var(--muted); font-size: 13px; margin: 0; }
+.status { font-size: 13px; color: var(--accent); min-height: 1.2em; }
+</style>
+
+<header>
+  <h1 id="titulo"></h1>
+  <p>Arraste os retângulos para mover e puxe os cantos para redimensionar. No fim, copie o resultado e cole no chat: a marcação final é refeita em resolução cheia.</p>
+</header>
+
+<nav class="thumbs" id="thumbs" aria-label="Fotos"></nav>
+
+<div class="work">
+  <div class="stage" id="stage">
+    <img id="photo" alt="Foto do local da competição">
+    <div class="legend" aria-hidden="true">
+      <div><i style="background:var(--solving)"></i>Solving area</div>
+      <div><i style="background:var(--scramble)"></i>Scramble area</div>
+      <div><i style="background:var(--waiting)"></i>Waiting area</div>
+    </div>
+  </div>
+
+  <aside>
+    <section>
+      <h2 id="photoLabel">Foto</h2>
+      <label class="inc"><input type="checkbox" id="include"> Incluir esta foto no relatório</label>
+    </section>
+    <section>
+      <h2>Áreas nesta foto</h2>
+      <div class="areas" id="areas"></div>
+    </section>
+    <section>
+      <h2>Resultado</h2>
+      <div class="row">
+        <button class="btn primary" id="copy">Copiar resultado</button>
+        <button class="btn" id="reset">Voltar ao original desta foto</button>
+      </div>
+      <p class="status" id="status" role="status"></p>
+      <textarea id="out" readonly aria-label="Configuração das áreas"></textarea>
+      <p class="hint">Coordenadas de 0 a 1, na ordem esquerda, topo, direita, base.</p>
+    </section>
+  </aside>
+</div>
+
+<script>
+// Preenchido por scripts/gerar_editor.py:
+// { titulo, chave, saida, fotos: [{ id, web, origem, incluir, caixas: {cor: [x0,y0,x1,y1]} }] }
+const DADOS = /*__DADOS__*/null;
+
+const AREAS = {
+  amarelo:  { name: "Resolução",      en: "Solving",  color: "var(--solving)" },
+  vermelho: { name: "Embaralhamento", en: "Scramble", color: "var(--scramble)" },
+  laranja:  { name: "Espera",         en: "Waiting",  color: "var(--waiting)" }
+};
+const DEFAULT_BOX = { amarelo: [0.30, 0.40, 0.60, 0.65], vermelho: [0.62, 0.30, 0.82, 0.45], laranja: [0.30, 0.68, 0.70, 0.92] };
+const FOTOS = Object.fromEntries(DADOS.fotos.map(f => [f.id, f]));
+const INITIAL = Object.fromEntries(DADOS.fotos.map(f => [f.id, { include: f.incluir, boxes: f.caixas || {} }]));
+const KEY = DADOS.chave;
+
+let state;
+try { state = JSON.parse(localStorage.getItem(KEY)) || null; } catch (e) { state = null; }
+if (!state || Object.keys(state).join() !== Object.keys(INITIAL).join()) state = JSON.parse(JSON.stringify(INITIAL));
+let current = (DADOS.fotos.find(f => f.incluir) || DADOS.fotos[0]).id;
+
+document.getElementById("titulo").textContent = DADOS.titulo;
+const stage = document.getElementById("stage");
+const photo = document.getElementById("photo");
+
+function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} renderOut(); }
+const r3 = v => Math.round(v * 1000) / 1000;
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+
+function renderThumbs() {
+  const nav = document.getElementById("thumbs");
+  nav.innerHTML = "";
+  Object.keys(state).forEach(id => {
+    const b = document.createElement("button");
+    b.className = "thumb" + (id === current ? " active" : "") + (state[id].include ? "" : " off");
+    b.innerHTML = `<img src="${FOTOS[id].web}" alt=""><span><b>${id}</b><em>${state[id].include ? "no relatório" : "fora"}</em></span>`;
+    b.onclick = () => { current = id; renderAll(); };
+    nav.appendChild(b);
+  });
+}
+
+function place(el, c) {
+  el.style.left = c[0]*100 + "%"; el.style.top = c[1]*100 + "%";
+  el.style.width = (c[2]-c[0])*100 + "%"; el.style.height = (c[3]-c[1])*100 + "%";
+}
+function renderBoxes() {
+  stage.querySelectorAll(".box").forEach(n => n.remove());
+  Object.entries(state[current].boxes).forEach(([cor, c]) => {
+    const d = document.createElement("div");
+    d.className = "box" + (c[1] < 0.05 ? " inside-top" : "");
+    d.dataset.cor = cor;
+    d.style.borderColor = AREAS[cor].color;
+    place(d, c);
+    d.innerHTML = `<span class="tag" style="background:${AREAS[cor].color}">${AREAS[cor].en}</span>` +
+      ["nw","ne","sw","se"].map(k => `<span class="h ${k}" data-h="${k}"></span>`).join("");
+    d.addEventListener("pointerdown", startDrag);
+    stage.appendChild(d);
+  });
+}
+
+let drag = null;
+function startDrag(ev) {
+  ev.preventDefault();
+  const el = ev.currentTarget;
+  const cor = el.dataset.cor;
+  drag = { el, cor, handle: ev.target.dataset.h || null, x0: ev.clientX, y0: ev.clientY,
+           start: state[current].boxes[cor].slice(), rect: stage.getBoundingClientRect() };
+  el.setPointerCapture(ev.pointerId);
+  el.addEventListener("pointermove", onDrag);
+  el.addEventListener("pointerup", endDrag, { once: true });
+  el.addEventListener("pointercancel", endDrag, { once: true });
+}
+function onDrag(ev) {
+  if (!drag) return;
+  const dx = (ev.clientX - drag.x0) / drag.rect.width, dy = (ev.clientY - drag.y0) / drag.rect.height;
+  let [x0, y0, x1, y1] = drag.start;
+  const MIN = 0.02;
+  if (!drag.handle) {
+    const w = x1 - x0, h = y1 - y0;
+    x0 = clamp(x0 + dx, 0, 1 - w); y0 = clamp(y0 + dy, 0, 1 - h); x1 = x0 + w; y1 = y0 + h;
+  } else {
+    if (drag.handle.includes("w")) x0 = clamp(x0 + dx, 0, x1 - MIN);
+    if (drag.handle.includes("e")) x1 = clamp(x1 + dx, x0 + MIN, 1);
+    if (drag.handle.includes("n")) y0 = clamp(y0 + dy, 0, y1 - MIN);
+    if (drag.handle.includes("s")) y1 = clamp(y1 + dy, y0 + MIN, 1);
+  }
+  const c = [r3(x0), r3(y0), r3(x1), r3(y1)];
+  state[current].boxes[drag.cor] = c;
+  place(drag.el, c);
+  drag.el.classList.toggle("inside-top", c[1] < 0.05);
+  renderAreas();
+}
+function endDrag() {
+  if (!drag) return;
+  drag.el.removeEventListener("pointermove", onDrag);
+  drag = null;
+  save();
+}
+
+function renderAreas() {
+  const wrap = document.getElementById("areas");
+  wrap.innerHTML = "";
+  Object.entries(AREAS).forEach(([cor, a]) => {
+    const c = state[current].boxes[cor];
+    const row = document.createElement("div");
+    row.className = "area";
+    row.innerHTML = `<span class="chip" style="background:${a.color}"></span><span>${a.name}</span>`;
+    const btn = document.createElement("button");
+    btn.className = "btn";
+    btn.id = `toggle-${cor}`;
+    btn.textContent = c ? "Remover" : "Adicionar";
+    btn.onclick = () => {
+      if (state[current].boxes[cor]) delete state[current].boxes[cor];
+      else state[current].boxes[cor] = DEFAULT_BOX[cor].slice();
+      renderBoxes(); renderAreas(); save();
+    };
+    row.appendChild(btn);
+    if (c) { const code = document.createElement("code"); code.textContent = `[${c.join(", ")}]`; row.appendChild(code); }
+    wrap.appendChild(row);
+  });
+}
+
+// O resultado ja sai no formato de configuracao de scripts/marcar_areas.py.
+function renderOut() {
+  const fotos = {};
+  Object.entries(state).forEach(([id, p]) => {
+    if (!p.include) return;
+    fotos[FOTOS[id].origem] = Object.entries(p.boxes).map(([cor, caixa]) => ({ cor, caixa }));
+  });
+  const txt = JSON.stringify({ saida: DADOS.saida, fotos }, null, 1)
+    .replace(/\[\s+([\d.,\s]+?)\s+\]/g, (m, g) => "[" + g.replace(/\s+/g, " ") + "]");
+  document.getElementById("out").value = txt;
+}
+
+function renderAll() {
+  photo.src = FOTOS[current].web;
+  document.getElementById("photoLabel").textContent = current;
+  const inc = document.getElementById("include");
+  inc.checked = state[current].include;
+  inc.onchange = () => { state[current].include = inc.checked; renderThumbs(); save(); };
+  renderThumbs(); renderBoxes(); renderAreas(); renderOut();
+}
+
+document.getElementById("reset").onclick = () => {
+  state[current] = JSON.parse(JSON.stringify(INITIAL[current]));
+  renderAll(); save();
+  document.getElementById("status").textContent = `${current} voltou à marcação original.`;
+};
+document.getElementById("copy").onclick = () => {
+  const ta = document.getElementById("out");
+  const st = document.getElementById("status");
+  navigator.clipboard.writeText(ta.value).then(
+    () => { st.textContent = "Copiado. Cole no chat."; },
+    () => { ta.focus(); ta.select(); st.textContent = "Texto selecionado. Use Copiar do sistema e cole no chat."; }
+  );
+};
+renderAll();
+</script>

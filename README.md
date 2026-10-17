@@ -37,7 +37,10 @@ references/
   exemplos/                 seis relatórios reais, usados como referência de forma e voz
 scripts/
   marcar_areas.py           desenha os retângulos e a legenda sobre as fotos
+  gerar_editor.py           monta o editor em que o delegado arrasta e redimensiona as áreas
   grade_referencia.py       gera a foto com grade nomeada, para apontar as áreas sem estimativa
+assets/
+  editor_areas.html         modelo da página do editor de áreas
 ```
 
 ## Scripts
@@ -61,6 +64,14 @@ python3 scripts/marcar_areas.py config.json
 }
 ```
 
+Gerar o editor de áreas, para o delegado ajustar os retângulos direto na foto (publicado como Artifact, junto com a pasta `fotos/` que o script cria):
+
+```bash
+python3 scripts/gerar_editor.py foto1.jpeg foto2.jpeg --saida editor/ --titulo "Áreas da competição" --config config.json
+```
+
+O botão "Copiar resultado" do editor devolve um JSON já no formato de `marcar_areas.py`, apontando para as fotos originais.
+
 Gerar a foto com grade de referência, quando for mais prático apontar as áreas por célula:
 
 ```bash
@@ -69,7 +80,7 @@ python3 scripts/grade_referencia.py foto.jpeg --saida saida/
 
 A grade tem 10 colunas (A–J) por 8 linhas (1–8). "Espera vai de D5 até H8" vira a caixa `[0.3, 0.5, 0.8, 1.0]`.
 
-Os dois scripts dependem apenas de [Pillow](https://pypi.org/project/Pillow/).
+Os scripts dependem apenas de [Pillow](https://pypi.org/project/Pillow/).
 
 ## Sobre os exemplos
 

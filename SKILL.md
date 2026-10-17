@@ -41,9 +41,9 @@ Pergunte junto com os dados financeiros, não depois: a cotação do dólar a us
 
 ## Fotos das áreas
 
-Relatórios costumam incluir fotos do salão com as áreas de resolução, embaralhamento e espera marcadas. `scripts/marcar_areas.py` desenha os retângulos e a legenda; `scripts/grade_referencia.py` gera a versão com grade.
+Relatórios costumam incluir fotos do salão com as áreas de resolução, embaralhamento e espera marcadas. `scripts/marcar_areas.py` desenha os retângulos e a legenda; `scripts/gerar_editor.py` monta um editor em que o delegado arrasta e redimensiona as áreas; `scripts/grade_referencia.py` gera a versão com grade.
 
-Identificar as áreas por estimativa visual é a parte mais cara do processo — numa sessão real custou cinco rodadas de correção, porque "cadeiras de costas para a área de resolução" é claro para quem esteve no salão e ambíguo numa foto em perspectiva. Na **segunda** correção, pare de adivinhar e gere a grade: o delegado responde "espera vai de D5 até H8" e a marcação sai exata. Detalhes em `references/fotos.md`.
+Identificar as áreas por estimativa visual é a parte mais cara do processo — numa sessão real custou cinco rodadas de correção, porque "cadeiras de costas para a área de resolução" é claro para quem esteve no salão e ambíguo numa foto em perspectiva. Faça uma primeira marcação, e na **segunda** correção (ou quando o delegado pedir para editar) pare de adivinhar: publique o editor com a sua marcação como ponto de partida. O delegado ajusta na própria foto e cola o resultado, que já é o config de `marcar_areas.py`. Se ele preferir responder por texto, use a grade ("espera vai de D5 até H8"). Detalhes em `references/fotos.md`.
 
 ## Entregas
 
